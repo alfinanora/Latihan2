@@ -1,1 +1,2 @@
 # Latihan2
+mencoba
