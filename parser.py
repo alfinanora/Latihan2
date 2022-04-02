@@ -1,9 +1,9 @@
 from sly import Parser
 
-import vcl_lexer
+import lexer
 
 class BasicParser(Parser):
-    tokens = vcl_lexer.BasicLexer.tokens
+    tokens = lexer.BasicLexer.tokens
 
     precedence = (
         ('left', '+', '-'),
@@ -13,84 +13,84 @@ class BasicParser(Parser):
 
     def __init__(self):
         self.env = { }
-    @_('')
+    ('')
     def statement(self, p):
         pass
 
-    @_('FOR var_assign TO expr THEN statement')
+    ('FOR var_assign TO expr THEN statement')
     def statement(self, p):
         return ('for_loop', ('for_loop_setup', p.var_assign, p.expr), p.statement)
 
-    @_('IF condition THEN statement ELSE statement')
+    ('IF condition THEN statement ELSE statement')
     def statement(self, p):
         return ('if_stmt', p.condition, ('branch', p.statement0, p.statement1))
 
-    @_('FUN NAME "(" ")" ARROW statement')
+    ('FUN NAME "(" ")" ARROW statement')
     def statement(self, p):
         return ('fun_def', p.NAME, p.statement)
 
-    @_('NAME "(" ")"')
+    ('NAME "(" ")"')
     def statement(self, p):
         return ('fun_call', p.NAME)
 
-    @_('expr EQEQ expr')
+    ('expr EQEQ expr')
     def condition(self, p):
         return ('condition_eqeq', p.expr0, p.expr1)
 
-    @_('var_assign')
+    ('var_assign')
     def statement(self, p):
         return p.var_assign
 
-    @_('NAME "=" expr')
+    ('NAME "=" expr')
     def var_assign(self, p):
         return ('var_assign', p.NAME, p.expr)
 
-    @_('NAME "=" STRING')
+    ('NAME "=" STRING')
     def var_assign(self, p):
         return ('var_assign', p.NAME, p.STRING)
 
-    @_('expr')
+    ('expr')
     def statement(self, p):
         return (p.expr)
 
-    @_('expr "+" expr')
+    ('expr "+" expr')
     def expr(self, p):
         return ('add', p.expr0, p.expr1)
 
-    @_('expr "-" expr')
+    ('expr "-" expr')
     def expr(self, p):
         return ('sub', p.expr0, p.expr1)
 
-    @_('expr "*" expr')
+    ('expr "*" expr')
     def expr(self, p):
         return ('mul', p.expr0, p.expr1)
 
-    @_('expr "/" expr')
+    ('expr "/" expr')
     def expr(self, p):
         return ('div', p.expr0, p.expr1)
 
-    @_('"-" expr %prec UMINUS')
+    ('"-" expr %prec UMINUS')
     def expr(self, p):
         return p.expr
 
-    @_('NAME')
+    ('NAME')
     def expr(self, p):
         return ('var', p.NAME)
 
-    @_('NUMBER')
+    ('NUMBER')
     def expr(self, p):
         return ('num', p.NUMBER)
         
-    @_('PRINT expr')
+    ('PRINT expr')
     def expr(self, p):
         return ('print', p.expr)
 
-    @_('PRINT STRING')
+    ('PRINT STRING')
     def statement(self, p):
         return ('print', p.STRING)
 
 if __name__ == '__main__':
-    lexer = vcl_lexer.BasicLexer()
+    lexer = lexer.BasicLexer()
     parser = BasicParser()
     env = {}
     while True:
